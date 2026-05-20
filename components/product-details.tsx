@@ -151,7 +151,7 @@ export function ProductDetails({ product }: { product: Product }) {
           <div>
             <h3 className="text-[20px] font-medium text-black mb-3">Returns</h3>
             <p className="text-[#027D48] text-[14px] leading-relaxed">
-              Free standard shipping on orders $50+ and free 60-day returns for Minna Members.
+              Free standard shipping on orders $50+ and free 60-day returns for Danana Members.
             </p>
           </div>
           

@@ -43,7 +43,7 @@ export function Navbar() {
 
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:flex-1 md:flex md:justify-center">
             <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-serif tracking-widest font-normal">MINNA</h1>
+              <h1 className="text-2xl font-serif tracking-widest font-normal">DANANA</h1>
             </Link>
           </div>
 
@@ -83,7 +83,7 @@ export function Navbar() {
               </div>
 
               <div className="lg:pl-6">
-                <h3 className="text-2xl font-medium text-black mb-5">MINNA&apos;s store</h3>
+                <h3 className="text-2xl font-medium text-black mb-5">DANANA&apos;s store</h3>
                 <Link href="/all-products" onClick={() => setIsMenuOpen(false)} className="block group">
                   <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-100">
                     <img

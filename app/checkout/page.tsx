@@ -24,8 +24,8 @@ export default function CheckoutPage() {
         total: subtotal,
         date: new Date().toISOString()
       };
-      const existingOrders = JSON.parse(localStorage.getItem('minna_orders') || '[]');
-      localStorage.setItem('minna_orders', JSON.stringify([...existingOrders, order]));
+      const existingOrders = JSON.parse(localStorage.getItem('danana_orders') || '[]');
+      localStorage.setItem('danana_orders', JSON.stringify([...existingOrders, order]));
     }
     
     clearCart();

@@ -55,7 +55,7 @@ export async function ensureAdminTables() {
 export async function createAdminSession(userId: string) {
   const token = crypto.randomBytes(32).toString('hex');
   await pool.query(
-    'INSERT INTO admin_sessions(user_id, token, expires_at) VALUES($1, $2, now() + interval \'7 days\')',
+    `INSERT INTO admin_sessions(user_id, token, expires_at) VALUES($1, $2, now() + interval '7 days')`,
     [userId, token]
   );
   return token;
@@ -80,23 +80,47 @@ export async function revokeAdminSession(token: string) {
 }
 
 export async function ensureTables() {
-  // create extension and table if they don't exist
   await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
+
+  // Migrate from v1 schema (detected by the presence of the old `actual_price` column)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'products' AND column_name = 'actual_price'
+      ) THEN
+        DROP TABLE IF EXISTS products;
+      END IF;
+    END $$
+  `);
+
+  // New schema — SEO-ready, supports size variants with stock and labelled image groups
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      name text NOT NULL,
-      slug text UNIQUE NOT NULL,
-      category text NOT NULL,
-      gender text NOT NULL,
-      type text NOT NULL,
-      actual_price numeric NOT NULL,
-      price_after_discount numeric NOT NULL,
-      sizes jsonb NOT NULL,
+      id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      name        text        NOT NULL,
+      slug        text        UNIQUE NOT NULL,
       description text,
-      images jsonb NOT NULL,
-      created_at timestamptz DEFAULT now(),
-      updated_at timestamptz DEFAULT now()
+      category    text,
+      gender      text        NOT NULL DEFAULT 'unisex',
+      base_price  numeric     NOT NULL DEFAULT 0,
+      compare_price numeric,
+      is_active   boolean     NOT NULL DEFAULT true,
+
+      -- Size variants: [{ "size": "M", "stock": 10 }, ...]
+      variants    jsonb       NOT NULL DEFAULT '[]',
+
+      -- Grouped images: [{ "label": "Home Kit", "images": ["url1", "url2"] }, ...]
+      image_groups jsonb      NOT NULL DEFAULT '[]',
+
+      -- SEO
+      meta_title       text,
+      meta_description text,
+      meta_keywords    text,
+
+      created_at  timestamptz NOT NULL DEFAULT now(),
+      updated_at  timestamptz NOT NULL DEFAULT now()
     )
   `);
 }

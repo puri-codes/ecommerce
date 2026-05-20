@@ -4,8 +4,8 @@ import './globals.css';
 import { SiteShell } from '@/components/site-shell';
 
 export const metadata: Metadata = {
-  title: 'MINNA',
-  description: 'Shop online with MINNA',
+  title: 'DANANA',
+  description: 'Shop online with DANANA',
 };
 
 export default function RootLayout({children}: {children: ReactNode}) {
