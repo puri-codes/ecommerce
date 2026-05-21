@@ -10,6 +10,7 @@ const GENDER_LINKS = [
   { label: 'Men',    href: '/all-products?gender=male'   },
   { label: 'Women',  href: '/all-products?gender=female' },
   { label: 'Unisex', href: '/all-products?gender=unisex' },
+  { label: 'Combos', href: '/combos'                     },
 ];
 
 const INFO_LINKS = [

@@ -8,7 +8,7 @@ type RouteContext = {
 const JSONB_FIELDS = new Set(['variants', 'image_groups']);
 const ALLOWED_FIELDS = new Set([
   'name', 'slug', 'description', 'category', 'gender',
-  'base_price', 'compare_price', 'is_active',
+  'base_price', 'compare_price', 'is_active', 'is_featured',
   'variants', 'image_groups',
   'meta_title', 'meta_description', 'meta_keywords',
 ]);

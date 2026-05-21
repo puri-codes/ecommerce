@@ -68,6 +68,7 @@ type FormState = {
   meta_description: string;
   meta_keywords: string;
   is_active: boolean;
+  is_featured: boolean;
   variants: FormVariant[];
   image_groups: FormImageGroup[];
 };
@@ -82,6 +83,7 @@ const EMPTY_FORM: FormState = {
   base_price: '', compare_price: '',
   meta_title: '', meta_description: '', meta_keywords: '',
   is_active: true,
+  is_featured: false,
   variants: [{ size: 'M', stock: '0' }],
   image_groups: [{ label: '', urls: [] }],
 };
@@ -109,6 +111,7 @@ function productToForm(p: AdminProduct): FormState {
     meta_description: p.meta_description ?? '',
     meta_keywords: p.meta_keywords ?? '',
     is_active: p.is_active ?? true,
+    is_featured: (p as any).is_featured ?? false,
     variants: (p.variants ?? []).length > 0
       ? p.variants.map((v) => ({ size: v.size, stock: String(v.stock) }))
       : [{ size: 'M', stock: '0' }],
@@ -222,6 +225,7 @@ export function AdminProductForm({ product }: Props) {
       base_price: parseFloat(form.base_price) || 0,
       compare_price: form.compare_price ? parseFloat(form.compare_price) : null,
       is_active: form.is_active,
+      is_featured: form.is_featured,
       meta_title: form.meta_title || null,
       meta_description: form.meta_description || null,
       meta_keywords: form.meta_keywords || null,
@@ -311,6 +315,15 @@ export function AdminProductForm({ product }: Props) {
                 <span className={`pointer-events-none absolute top-0.5 inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform ${form.is_active ? 'translate-x-[1.125rem]' : 'translate-x-0.5'}`} />
               </button>
               <span className="text-[13px]">{form.is_active ? 'Active — visible in store' : 'Draft — hidden from store'}</span>
+            </div>
+
+            <div className="flex items-center gap-3 pt-2">
+              <button type="button" role="switch" aria-checked={form.is_featured}
+                onClick={() => setField('is_featured', !form.is_featured)}
+                className={`relative inline-flex h-5 w-9 shrink-0 rounded-full transition-colors focus-visible:outline-none ${form.is_featured ? 'bg-[#EDE735]' : 'bg-gray-300'}`}>
+                <span className={`pointer-events-none absolute top-0.5 inline-block h-4 w-4 rounded-full bg-white shadow transform transition-transform ${form.is_featured ? 'translate-x-[1.125rem]' : 'translate-x-0.5'}`} />
+              </button>
+              <span className="text-[13px]">{form.is_featured ? 'Featured — shown on homepage' : 'Not featured'}</span>
             </div>
           </div>
         </Section>
