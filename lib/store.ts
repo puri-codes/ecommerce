@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Product } from './data';
 
 export interface CartItem {
   id: string; // unique string for the item + its variants
@@ -52,7 +51,7 @@ export const useCartStore = create<CartStore>()(
       clearCart: () => set({ items: [] })
     }),
     {
-      name: 'minna-cart',
+      name: 'danana-cart',
     }
   )
 );

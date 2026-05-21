@@ -27,7 +27,7 @@ export function Footer() {
       </div>
       <div className="bg-[#000] text-[#e5e5e5] py-12 px-4 flex flex-col items-center">
         <Link href="/" className="mb-8">
-          <h2 className="text-white text-3xl font-serif tracking-widest">MINNA</h2>
+          <h2 className="text-white text-3xl font-serif tracking-widest">DANANA</h2>
         </Link>
         <div className="flex gap-6 mb-8 text-white">
           <a href="#" className="hover:text-gray-300">Int</a>
@@ -36,7 +36,7 @@ export function Footer() {
           <a href="#" className="hover:text-gray-300">X</a>
           <a href="#" className="hover:text-gray-300">Yt</a>
         </div>
-        <p className="text-[#696969] text-sm">© 2025 MINNA. All rights reserved.</p>
+        <p className="text-[#696969] text-sm">© 2025 DANANA. All rights reserved.</p>
       </div>
     </footer>
   );

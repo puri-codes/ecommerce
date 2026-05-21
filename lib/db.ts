@@ -55,7 +55,7 @@ export async function ensureAdminTables() {
 export async function createAdminSession(userId: string) {
   const token = crypto.randomBytes(32).toString('hex');
   await pool.query(
-    'INSERT INTO admin_sessions(user_id, token, expires_at) VALUES($1, $2, now() + interval \'7 days\')',
+    `INSERT INTO admin_sessions(user_id, token, expires_at) VALUES($1, $2, now() + interval '7 days')`,
     [userId, token]
   );
   return token;
@@ -80,25 +80,82 @@ export async function revokeAdminSession(token: string) {
 }
 
 export async function ensureTables() {
-  // create extension and table if they don't exist
   await pool.query(`CREATE EXTENSION IF NOT EXISTS pgcrypto`);
+
+  // Migrate from v1 schema (detected by the presence of the old `actual_price` column)
+  await pool.query(`
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns
+        WHERE table_name = 'products' AND column_name = 'actual_price'
+      ) THEN
+        DROP TABLE IF EXISTS products;
+      END IF;
+    END $$
+  `);
+
+  // New schema — SEO-ready, supports size variants with stock and labelled image groups
   await pool.query(`
     CREATE TABLE IF NOT EXISTS products (
-      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-      name text NOT NULL,
-      slug text UNIQUE NOT NULL,
-      category text NOT NULL,
-      gender text NOT NULL,
-      type text NOT NULL,
-      actual_price numeric NOT NULL,
-      price_after_discount numeric NOT NULL,
-      sizes jsonb NOT NULL,
+      id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      name        text        NOT NULL,
+      slug        text        UNIQUE NOT NULL,
       description text,
-      images jsonb NOT NULL,
-      created_at timestamptz DEFAULT now(),
-      updated_at timestamptz DEFAULT now()
+      category    text,
+      gender      text        NOT NULL DEFAULT 'unisex',
+      base_price  numeric     NOT NULL DEFAULT 0,
+      compare_price numeric,
+      is_active   boolean     NOT NULL DEFAULT true,
+
+      -- Size variants: [{ "size": "M", "stock": 10 }, ...]
+      variants    jsonb       NOT NULL DEFAULT '[]',
+
+      -- Grouped images: [{ "label": "Home Kit", "images": ["url1", "url2"] }, ...]
+      image_groups jsonb      NOT NULL DEFAULT '[]',
+
+      -- SEO
+      meta_title       text,
+      meta_description text,
+      meta_keywords    text,
+
+      created_at  timestamptz NOT NULL DEFAULT now(),
+      updated_at  timestamptz NOT NULL DEFAULT now()
     )
   `);
+}
+
+export async function ensureOrdersTable() {
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS orders (
+      id          uuid    PRIMARY KEY DEFAULT gen_random_uuid(),
+      customer_name text  NOT NULL,
+      phone       text    NOT NULL,
+      address     text,
+      items       jsonb   NOT NULL DEFAULT '[]',
+      subtotal    numeric NOT NULL DEFAULT 0,
+      status      text    NOT NULL DEFAULT 'pending',
+      created_at  timestamptz NOT NULL DEFAULT now()
+    )
+  `);
+}
+
+export async function getProducts(activeOnly = true) {
+  await ensureTables();
+  const where = activeOnly ? 'WHERE is_active = true' : '';
+  const res = await pool.query(
+    `SELECT * FROM products ${where} ORDER BY created_at DESC`
+  );
+  return res.rows;
+}
+
+export async function getProductBySlug(slug: string) {
+  await ensureTables();
+  const res = await pool.query(
+    'SELECT * FROM products WHERE slug = $1 LIMIT 1',
+    [slug]
+  );
+  return res.rows[0] ?? null;
 }
 
 export async function createNotificationClient() {

@@ -67,7 +67,7 @@ export function CartDrawer() {
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
-                      <span className="font-semibold">${item.price}</span>
+                      <span className="font-semibold">Rs. {item.price.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -79,7 +79,7 @@ export function CartDrawer() {
         <div className="border-t border-gray-100 p-6 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
           <div className="flex justify-between items-center mb-6">
             <span className="font-medium">Subtotal</span>
-            <span className="font-medium">${subtotal}</span>
+            <span className="font-medium">Rs. {subtotal.toLocaleString()}</span>
           </div>
           <Link href="/checkout" onClick={(e) => { if (items.length === 0) e.preventDefault(); else setIsOpen(false); }}>
             <button 
