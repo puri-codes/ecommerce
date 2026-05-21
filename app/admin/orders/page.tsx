@@ -1,24 +1,22 @@
 import { cookies } from 'next/headers';
-import { AdminLoginForm } from '@/components/admin-login-form';
-import { AdminDashboard } from '@/components/admin-dashboard';
-import { AdminShell } from '@/components/admin-shell';
+import { redirect } from 'next/navigation';
 import { ensureAdminTables, getAdminBySessionToken } from '@/lib/db';
+import { AdminShell } from '@/components/admin-shell';
+import { AdminOrdersList } from '@/components/admin-orders-list';
 
 export const dynamic = 'force-dynamic';
 
-export default async function AdminPage() {
+export default async function OrdersPage() {
   await ensureAdminTables();
   const cookieStore = await cookies();
   const token = cookieStore.get('admin_session')?.value;
   const admin = token ? await getAdminBySessionToken(token) : null;
 
-  if (!admin) {
-    return <AdminLoginForm />;
-  }
+  if (!admin) redirect('/admin');
 
   return (
     <AdminShell adminEmail={admin.email}>
-      <AdminDashboard />
+      <AdminOrdersList />
     </AdminShell>
   );
 }
