@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
-  id: string; // unique string for the item + its variants
+  id: string;
   productId: string;
   productTitle: string;
   price: number;
@@ -10,6 +10,9 @@ export interface CartItem {
   color?: string;
   size?: string;
   quantity: number;
+  // Combo bundles — when true the item represents an entire combo deal
+  isCombo?: boolean;
+  comboItems?: Array<{ productName: string; size: string }>;
 }
 
 interface CartStore {
@@ -28,30 +31,44 @@ export const useCartStore = create<CartStore>()(
       items: [],
       isOpen: false,
       setIsOpen: (isOpen) => set({ isOpen }),
+
       addItem: (item) => set((state) => {
-        const existingItemIndex = state.items.findIndex(
-          i => i.productId === item.productId && i.color === item.color && i.size === item.size
+        // Combo items deduplicate by productId + encoded size string
+        // Regular items deduplicate by productId + color + size
+        const existingIndex = state.items.findIndex((i) =>
+          i.productId === item.productId &&
+          i.color    === item.color &&
+          i.size     === item.size
         );
-        
-        if (existingItemIndex > -1) {
-          const newItems = [...state.items];
-          newItems[existingItemIndex].quantity += item.quantity;
-          return { items: newItems, isOpen: true };
+
+        if (existingIndex > -1) {
+          const next = [...state.items];
+          next[existingIndex] = {
+            ...next[existingIndex],
+            quantity: next[existingIndex].quantity + item.quantity,
+          };
+          return { items: next, isOpen: true };
         }
-        
-        const id = `${item.productId}-${item.color || ''}-${item.size || ''}`;
+
+        const id = item.isCombo
+          ? `combo-${item.productId}-${item.size ?? Date.now()}`
+          : `${item.productId}-${item.color ?? ''}-${item.size ?? ''}`;
+
         return { items: [...state.items, { ...item, id }], isOpen: true };
       }),
+
       removeItem: (id) => set((state) => ({
-        items: state.items.filter((item) => item.id !== id)
+        items: state.items.filter((item) => item.id !== id),
       })),
+
       updateQuantity: (id, quantity) => set((state) => ({
-        items: state.items.map((item) => item.id === id ? { ...item, quantity } : item)
+        items: state.items.map((item) =>
+          item.id === id ? { ...item, quantity } : item
+        ),
       })),
-      clearCart: () => set({ items: [] })
+
+      clearCart: () => set({ items: [] }),
     }),
-    {
-      name: 'danana-cart',
-    }
+    { name: 'danana-cart' }
   )
 );
