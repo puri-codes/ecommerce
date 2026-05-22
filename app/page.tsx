@@ -5,8 +5,7 @@ import type { ComboItem } from '@/lib/types';
 
 export const revalidate = 60;
 
-const heroImage =
-  'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&q=80&w=2400';
+const heroImage = '/hero_banner.png';
 
 export default async function HomePage() {
   const [featured, all, combos] = await Promise.all([

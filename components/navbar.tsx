@@ -126,7 +126,7 @@ export function Navbar() {
           {/* Centre: brand */}
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 md:static md:translate-x-0 md:translate-y-0 md:flex-1 md:flex md:justify-center">
             <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-serif tracking-widest font-normal">DANANA</h1>
+              <img src="/logo.png" alt="DANANA" className="h-10 w-auto object-contain" />
             </Link>
           </div>
 
@@ -186,7 +186,7 @@ export function Navbar() {
                 <Link href="/all-products" onClick={closeMenu} className="block group">
                   <div className="relative aspect-[16/9] w-full overflow-hidden bg-gray-100">
                     <img
-                      src="https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&q=80&w=1600"
+                      src="/england_front.png"
                       className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       alt="DANANA store"
                     />

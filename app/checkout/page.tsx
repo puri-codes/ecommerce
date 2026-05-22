@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Phone, Tag, X, Layers } from 'lucide-react';
+import { Phone, Tag, X, Layers, Banknote, QrCode, Truck } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 
 type FormData    = { fullName: string; phone: string; address: string };
@@ -197,6 +197,25 @@ export default function CheckoutPage() {
                 After placing your order, our team will{' '}
                 <strong className="text-black">follow up on call</strong> to confirm and arrange delivery.
               </p>
+            </div>
+
+            {/* Payment options */}
+            <div className="border border-gray-200 px-4 py-4 mt-1">
+              <p className="text-[10px] uppercase tracking-[0.22em] text-[#696969] mb-3">Payment options</p>
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center gap-2.5 text-[13px] text-black">
+                  <Banknote className="h-4 w-4 shrink-0 text-[#696969]" />
+                  <span>Cash on delivery</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-[13px] text-black">
+                  <QrCode className="h-4 w-4 shrink-0 text-[#696969]" />
+                  <span>Online / QR payment at delivery</span>
+                </div>
+                <div className="flex items-center gap-2.5 text-[13px] text-[#027D48] font-medium mt-1 pt-2 border-t border-gray-100">
+                  <Truck className="h-4 w-4 shrink-0" />
+                  <span>Free delivery — no extra charges</span>
+                </div>
+              </div>
             </div>
 
             <button type="submit" disabled={items.length === 0 || busy}

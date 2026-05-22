@@ -174,18 +174,60 @@ export function Footer() {
         </div>
 
         {/* Bottom bar */}
-        <div className="bg-[#000] text-[#e5e5e5] py-12 px-4 flex flex-col items-center">
-          <Link href="/" className="mb-8">
-            <h2 className="text-white text-3xl font-serif tracking-widest">DANANA</h2>
-          </Link>
-          <div className="flex gap-6 mb-8 text-white text-sm">
-            <a href="#" className="hover:text-gray-300 transition-colors">Instagram</a>
-            <a href="#" className="hover:text-gray-300 transition-colors">Pinterest</a>
-            <a href="#" className="hover:text-gray-300 transition-colors">TikTok</a>
-            <a href="#" className="hover:text-gray-300 transition-colors">X</a>
-            <a href="#" className="hover:text-gray-300 transition-colors">YouTube</a>
+        <div className="bg-[#000] text-[#e5e5e5] py-14 px-4">
+          <div className="max-w-7xl mx-auto flex flex-col items-center">
+
+            {/* Logo */}
+            <Link href="/" className="mb-10">
+              <img src="/logo.png" alt="DANANA" className="h-14 w-auto object-contain" />
+            </Link>
+
+            {/* Nav columns */}
+            <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-8 mb-12 text-center sm:text-left">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#696969] mb-4">Shop</p>
+                <div className="flex flex-col gap-3 text-sm text-[#bbb]">
+                  <Link href="/all-products" className="hover:text-white transition-colors">All Products</Link>
+                  <Link href="/all-products?gender=male" className="hover:text-white transition-colors">Men</Link>
+                  <Link href="/all-products?gender=female" className="hover:text-white transition-colors">Women</Link>
+                  <Link href="/all-products?gender=unisex" className="hover:text-white transition-colors">Unisex</Link>
+                  <Link href="/combos" className="hover:text-white transition-colors">Combos</Link>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#696969] mb-4">Info</p>
+                <div className="flex flex-col gap-3 text-sm text-[#bbb]">
+                  <Link href="/about" className="hover:text-white transition-colors">About</Link>
+                  <Link href="/faq" className="hover:text-white transition-colors">FAQ</Link>
+                  <Link href="/payment-options" className="hover:text-white transition-colors">Payment Options</Link>
+                  <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#696969] mb-4">Orders</p>
+                <div className="flex flex-col gap-3 text-sm text-[#bbb]">
+                  <Link href="/view-orders" className="hover:text-white transition-colors">View Orders</Link>
+                  <Link href="/checkout" className="hover:text-white transition-colors">Checkout</Link>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.25em] text-[#696969] mb-4">Follow Us</p>
+                <div className="flex flex-col gap-3 text-sm text-[#bbb]">
+                  <a href="https://www.instagram.com/danana_wears/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a>
+                  <a href="https://www.instagram.com/danana_wears/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Facebook</a>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider + copyright */}
+            <div className="w-full border-t border-[#222] pt-8 text-center">
+              <p className="text-[#696969] text-sm">© 2026 DANANA. All rights reserved.</p>
+            </div>
+
           </div>
-          <p className="text-[#696969] text-sm">© 2025 DANANA. All rights reserved.</p>
         </div>
       </footer>
     </>
