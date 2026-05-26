@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Link from 'next/link';
-import { Phone, Tag, X, Layers, Banknote, QrCode, Truck } from 'lucide-react';
+import { Phone, Tag, X, Layers, Banknote, QrCode, Truck, Pencil, AlertTriangle } from 'lucide-react';
 import { useCartStore } from '@/lib/store';
 
 type FormData    = { fullName: string; phone: string; address: string };
@@ -23,6 +23,7 @@ export default function CheckoutPage() {
 
   const discount   = promoResult?.discount_amount ?? 0;
   const finalTotal = subtotal - discount;
+  const hasCustomizedItems = items.some((item) => item.customization);
 
   function handlePhoneChange(raw: string) {
     const digits = raw.replace(/\D/g, '').slice(0, 10);
@@ -332,12 +333,35 @@ export default function CheckoutPage() {
                           <span>· Qty {item.quantity}</span>
                         </div>
                       )}
+
+                      {/* Customization details */}
+                      {item.customization && (
+                        <div className="mt-1.5 inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-sm">
+                          <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
+                          <span className="text-[10px] text-amber-800 font-medium">
+                            {item.customization.playerName}
+                            {item.customization.playerName && item.customization.playerNumber && ' · '}
+                            {item.customization.playerNumber && `#${item.customization.playerNumber}`}
+                            {' — Custom'}
+                          </span>
+                        </div>
+                      )}
                     </div>
                     <div className="text-[13px] font-medium shrink-0">
                       Rs. {(item.price * item.quantity).toLocaleString()}
                     </div>
                   </div>
                 ))}
+
+                {/* Prepayment notice for customized jerseys */}
+                {hasCustomizedItems && (
+                  <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 px-3 py-2.5 -mx-1">
+                    <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+                    <p className="text-[11px] text-amber-800 leading-relaxed">
+                      <span className="font-semibold">Advance payment required</span> — customized jerseys must be paid in full before production begins. Our team will reach out with payment details.
+                    </p>
+                  </div>
+                )}
 
                 {/* Totals */}
                 <div className="border-t border-gray-200 pt-4 space-y-2 text-[13px]">

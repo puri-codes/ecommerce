@@ -1,9 +1,11 @@
 "use client";
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { Minus, Plus } from "lucide-react";
+import { Minus, Plus, Pencil, AlertTriangle } from "lucide-react";
 import type { DbProduct } from "@/lib/types";
 import { useCartStore } from "@/lib/store";
+
+const CUSTOMIZATION_FEE = 500;
 
 export function ProductDetails({ product }: { product: DbProduct }) {
   const groups = product.image_groups ?? [];
@@ -13,6 +15,9 @@ export function ProductDetails({ product }: { product: DbProduct }) {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState(variants[0]?.size ?? "");
   const [quantity, setQuantity] = useState(1);
+  const [customizeEnabled, setCustomizeEnabled] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+  const [playerNumber, setPlayerNumber] = useState("");
   const { addItem } = useCartStore();
 
   const currentGroup = groups[activeGroup] ?? { label: "", images: [] };
@@ -29,6 +34,7 @@ export function ProductDetails({ product }: { product: DbProduct }) {
   const comparePrice = product.compare_price
     ? Number(product.compare_price)
     : null;
+  const effectivePrice = customizeEnabled ? basePrice + CUSTOMIZATION_FEE : basePrice;
 
   function switchGroup(i: number) {
     setActiveGroup(i);
@@ -39,11 +45,15 @@ export function ProductDetails({ product }: { product: DbProduct }) {
     addItem({
       productId: product.id,
       productTitle: product.name,
-      price: basePrice,
+      price: effectivePrice,
       image: currentImages[0] ?? "",
       color: currentGroup.label || undefined,
       size: selectedSize || undefined,
       quantity,
+      customization:
+        customizeEnabled && (playerName.trim() || playerNumber.trim())
+          ? { playerName: playerName.trim().toUpperCase(), playerNumber: playerNumber.trim() }
+          : undefined,
     });
   }
 
@@ -170,9 +180,14 @@ export function ProductDetails({ product }: { product: DbProduct }) {
               </span>
             )}
             <span className="text-[26px] font-semibold text-[#FA5D42]">
-              Rs. {basePrice.toLocaleString()}
+              Rs. {effectivePrice.toLocaleString()}
             </span>
-            {comparePrice && comparePrice > basePrice && (
+            {customizeEnabled && (
+              <span className="text-[12px] text-[#696969] font-medium">
+                incl. Rs. {CUSTOMIZATION_FEE} customization
+              </span>
+            )}
+            {!customizeEnabled && comparePrice && comparePrice > basePrice && (
               <span className="text-sm text-[#027D48] font-medium">
                 Save Rs. {(comparePrice - basePrice).toLocaleString()}
               </span>
@@ -237,6 +252,82 @@ export function ProductDetails({ product }: { product: DbProduct }) {
               </div>
             </div>
           )}
+
+          {/* ── Jersey Customization ── */}
+          <div className="mb-8">
+            {/* Toggle header */}
+            <button
+              type="button"
+              onClick={() => setCustomizeEnabled((v) => !v)}
+              className={`w-full flex items-center justify-between px-4 py-3 border transition-colors ${
+                customizeEnabled
+                  ? "border-black bg-black text-white"
+                  : "border-gray-200 hover:border-black text-black"
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <Pencil className="w-4 h-4 shrink-0" />
+                <span className="text-sm font-medium">Customize Your Jersey</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className={`text-[12px] font-semibold ${customizeEnabled ? "text-[#EDE735]" : "text-[#FA5D42]"}`}>
+                  + Rs. {CUSTOMIZATION_FEE.toLocaleString()}
+                </span>
+                {/* Toggle pill */}
+                <div className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${customizeEnabled ? "bg-[#EDE735]" : "bg-gray-400"}`}>
+                  <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all duration-200 ${customizeEnabled ? "left-[calc(100%-1.125rem)]" : "left-0.5"}`} />
+                </div>
+              </div>
+            </button>
+
+            {/* Expanded form */}
+            {customizeEnabled && (
+              <div className="border border-t-0 border-black px-4 pt-4 pb-5 flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Player Name */}
+                  <div className="flex-1">
+                    <label className="block text-[10px] uppercase tracking-[0.2em] text-[#696969] mb-1.5">
+                      Name on Jersey
+                    </label>
+                    <input
+                      type="text"
+                      value={playerName}
+                      onChange={(e) => setPlayerName(e.target.value.toUpperCase())}
+                      placeholder="e.g. RONALDO"
+                      maxLength={12}
+                      className="w-full border-b border-gray-300 py-2 text-sm font-medium tracking-widest outline-none focus:border-black transition-colors bg-transparent placeholder:font-normal placeholder:tracking-normal placeholder:text-gray-400"
+                    />
+                    <p className="text-[10px] text-[#aaa] mt-1">Max 12 characters</p>
+                  </div>
+
+                  {/* Player Number */}
+                  <div className="w-full sm:w-28">
+                    <label className="block text-[10px] uppercase tracking-[0.2em] text-[#696969] mb-1.5">
+                      Number
+                    </label>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={playerNumber}
+                      onChange={(e) => setPlayerNumber(e.target.value.replace(/\D/g, "").slice(0, 2))}
+                      placeholder="e.g. 7"
+                      maxLength={2}
+                      className="w-full border-b border-gray-300 py-2 text-sm font-medium text-center tracking-widest outline-none focus:border-black transition-colors bg-transparent placeholder:font-normal placeholder:tracking-normal placeholder:text-gray-400"
+                    />
+                    <p className="text-[10px] text-[#aaa] mt-1">Up to 2 digits</p>
+                  </div>
+                </div>
+
+                {/* Prepayment disclaimer */}
+                <div className="flex items-start gap-2.5 bg-amber-50 border border-amber-200 px-3 py-2.5 mt-1">
+                  <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+                  <p className="text-[12px] text-amber-800 leading-relaxed">
+                    <span className="font-semibold">Full advance payment is required</span> for customized jerseys. Your order will be processed only after payment is confirmed.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
 
           {/* Quantity + Add to cart */}
           <div className="flex items-center gap-3 mb-8">

@@ -13,6 +13,8 @@ export interface CartItem {
   // Combo bundles — when true the item represents an entire combo deal
   isCombo?: boolean;
   comboItems?: Array<{ productName: string; size: string; kit?: string }>;
+  // Jersey customization — name + number printed on the jersey (+Rs.500)
+  customization?: { playerName: string; playerNumber: string };
 }
 
 interface CartStore {
@@ -34,11 +36,14 @@ export const useCartStore = create<CartStore>()(
 
       addItem: (item) => set((state) => {
         // Combo items deduplicate by productId + encoded size string
-        // Regular items deduplicate by productId + color + size
+        // Regular items deduplicate by productId + color + size + customization
+        // Customized items with different names/numbers are always separate entries
         const existingIndex = state.items.findIndex((i) =>
           i.productId === item.productId &&
           i.color    === item.color &&
-          i.size     === item.size
+          i.size     === item.size &&
+          i.customization?.playerName  === item.customization?.playerName &&
+          i.customization?.playerNumber === item.customization?.playerNumber
         );
 
         if (existingIndex > -1) {
@@ -50,9 +55,12 @@ export const useCartStore = create<CartStore>()(
           return { items: next, isOpen: true };
         }
 
+        const customSuffix = item.customization
+          ? `-${item.customization.playerName}-${item.customization.playerNumber}`
+          : '';
         const id = item.isCombo
           ? `combo-${item.productId}-${item.size ?? Date.now()}`
-          : `${item.productId}-${item.color ?? ''}-${item.size ?? ''}`;
+          : `${item.productId}-${item.color ?? ''}-${item.size ?? ''}${customSuffix}`;
 
         return { items: [...state.items, { ...item, id }], isOpen: true };
       }),

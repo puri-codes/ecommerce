@@ -1,11 +1,12 @@
 'use client';
 import { useCartStore } from '@/lib/store';
-import { X, Minus, Plus, Layers } from 'lucide-react';
+import { X, Minus, Plus, Layers, Pencil, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 export function CartDrawer() {
   const { items, isOpen, setIsOpen, updateQuantity, removeItem } = useCartStore();
   const subtotal = items.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const hasCustomizedItems = items.some((item) => item.customization);
 
   return (
     <div className={`fixed inset-0 z-50 flex justify-end ${isOpen ? '' : 'pointer-events-none'}`}>
@@ -99,6 +100,18 @@ export function CartDrawer() {
                           {item.size && <span>{item.size}</span>}
                         </div>
                       )}
+
+                      {/* Customization badge */}
+                      {item.customization && (
+                        <div className="mt-1.5 inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 px-2 py-1 rounded-sm">
+                          <Pencil className="w-3 h-3 text-amber-600 shrink-0" />
+                          <span className="text-[11px] text-amber-800 font-medium">
+                            {item.customization.playerName && <span>{item.customization.playerName}</span>}
+                            {item.customization.playerName && item.customization.playerNumber && <span> · </span>}
+                            {item.customization.playerNumber && <span>#{item.customization.playerNumber}</span>}
+                          </span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Quantity + price */}
@@ -131,6 +144,16 @@ export function CartDrawer() {
 
         {/* Footer */}
         <div className="border-t border-gray-100 p-6 bg-white shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+          {/* Prepayment notice for customized jerseys */}
+          {hasCustomizedItems && (
+            <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 px-3 py-2.5 mb-4">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-500 mt-0.5" />
+              <p className="text-[11px] text-amber-800 leading-relaxed">
+                <span className="font-semibold">Advance payment required</span> — customized jerseys must be paid in full before production begins.
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-between items-center mb-5">
             <span className="font-medium">Subtotal</span>
             <span className="font-semibold">Rs. {subtotal.toLocaleString()}</span>

@@ -1,19 +1,14 @@
-import type { MetadataRoute } from 'next';
+import type { MetadataRoute } from "next";
 
-const APP_URL = process.env.APP_URL ?? 'https://danana.com.np';
+const APP_URL = process.env.APP_URL ?? "https://danana.shop";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
-        userAgent: '*',
-        allow: '/',
-        disallow: [
-          '/admin',
-          '/admin/',
-          '/api/',
-          '/checkout',
-        ],
+        userAgent: "*",
+        allow: "/",
+        disallow: ["/admin", "/admin/", "/api/", "/checkout"],
       },
     ],
     sitemap: `${APP_URL}/sitemap.xml`,
